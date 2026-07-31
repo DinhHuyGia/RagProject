@@ -1,0 +1,32 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+build/
+dist/
+
+# Test and lint output
+.coverage
+.test_tmp_*/
+.pytest_cache/
+.ruff_cache/
+htmlcov/
+
+# Frontend dependencies and builds
+frontend/node_modules/
+frontend/dist/
+
+# Local configuration and secrets
+.env
+.env.*
+!.env.example
+
+# Runtime document data
+data/uploads/
+data/chroma/
+data/*.sqlite3
+data/*.sqlite3-*
+
+.pnpm-store/
