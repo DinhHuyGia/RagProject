@@ -85,7 +85,7 @@ def build_services(settings: AppSettings) -> AppServices:
     document_registry = DocumentRegistry(settings.document_database)
     rag = AdaptiveRAG(
         chunk_retriever=vectorstore.as_retriever(
-            search_kwargs={"k": 5},
+            search_kwargs={"k": 8},
         )
     )
     return AppServices(

@@ -106,14 +106,33 @@ class AdaptiveRAG:
         }
 
         answer_prompt = ChatPromptTemplate.from_template("""
-        Answer using only the retrieved context.
-        If the context is insufficient, say so instead of guessing.
+    You are a concise document question-answering assistant.
 
-        Context:
-        {context}
+Answer the user's exact question using only the retrieved context.
 
-        Question:
-        {question}
+Requirements:
+- Begin with the direct answer.
+- Address every part of the question.
+- Answer only what the user asked.
+- Use the fewest sentences necessary.
+- If one sentence fully answers the question, stop after that sentence.
+- Include only facts needed to answer the question.
+- Do not summarize unrelated parts of the context.
+- Do not add supporting details or general background unless the question
+  explicitly asks for them.
+- Prefer one to three concise sentences.
+- For multi-part questions, answer each part clearly.
+- If the context does not contain enough information, say exactly
+  what requested information the document does not provide, then stop.
+- Do not use outside knowledge.
+
+Question:
+{question}
+
+Retrieved context:
+{context}
+
+Direct answer:
         """
         )
 
@@ -176,17 +195,55 @@ class AdaptiveRAG:
         self,
         queries: list[str],
         indexes: list[IndexName],
+        document_id: str | None = None,
     ) -> list[Document]:
         ranked_results = []
 
         for index_name in indexes:
             retriever = self.get_retriever(index_name)
+
+            if document_id is not None:
+                vectorstore = getattr(retriever, "vectorstore", None)
+
+                if vectorstore is not None:
+                    search_kwargs = dict(
+                        getattr(retriever, "search_kwargs", {})
+                    )
+                    existing_filter = search_kwargs.get("filter")
+                    document_filter = {"document_id": document_id}
+
+                    if existing_filter:
+                        search_kwargs["filter"] = {
+                            "$and": [existing_filter, document_filter]
+                        }
+                    else:
+                        search_kwargs["filter"] = document_filter
+
+                    retriever = vectorstore.as_retriever(
+                        search_type=getattr(
+                            retriever,
+                            "search_type",
+                            "similarity",
+                        ),
+                        search_kwargs=search_kwargs,
+                    )
     
             for query in queries:
                 documents = retriever.invoke(query)
+
+                # Keep filtering strict even for retriever implementations
+                # that cannot push a metadata filter into their vector store.
+                if document_id is not None:
+                    documents = [
+                        document
+                        for document in documents
+                        if document.metadata.get("document_id")
+                        == document_id
+                    ]
+
                 ranked_results.append(documents)
 
-        return reciprocal_rank_fusion(ranked_results)[:6]
+        return reciprocal_rank_fusion(ranked_results)[:8]
     
     def invoke(
         self,

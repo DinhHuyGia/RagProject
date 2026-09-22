@@ -10,7 +10,12 @@ from langchain_chroma import Chroma
 from langchain_core.embeddings import Embeddings
 from reportlab.pdfgen import canvas
 
-from rag_tutorial.ingestion import DocumentIngestionService
+from rag_tutorial.adaptive_rag import AdaptiveRAG
+from rag_tutorial.ingestion import (
+    DocumentIngestionService,
+    normalize_pdf_text,
+)
+from rag_tutorial.langgraph_rag import LangGraphRAG
 
 
 class DeterministicKeywordEmbeddings(Embeddings):
@@ -42,6 +47,17 @@ class DeterministicKeywordEmbeddings(Embeddings):
 
     def embed_query(self, text: str) -> list[float]:
         return self._embed(text)
+
+
+def test_normalize_pdf_text_repairs_encoding_and_whitespace() -> None:
+    extracted = (
+        "Appleâ€™s  website\n \nuses   whitespace and a hyphen-\n"
+        "ated word."
+    )
+
+    assert normalize_pdf_text(extracted) == (
+        "Apple’s website uses whitespace and a hyphenated word."
+    )
 
 
 @pytest.fixture
@@ -145,6 +161,67 @@ def test_real_txt_ingestion_retrieval_and_deletion(
         document.metadata["document_id"]
         for document in remaining_matches
     } == {distractor.document_id}
+
+
+def test_source_filtered_retrieval_uses_document_metadata(
+    workspace_temp_path: Path,
+    real_vectorstore: Chroma,
+) -> None:
+    orchid_path = workspace_temp_path / "orchid.txt"
+    orchid_path.write_text(
+        "Project Orchid launches Friday beside the east entrance.",
+        encoding="utf-8",
+    )
+    harbor_path = workspace_temp_path / "harbor.txt"
+    harbor_path.write_text(
+        "Project Harbor budget review happens Monday.",
+        encoding="utf-8",
+    )
+
+    ingestion = DocumentIngestionService(
+        real_vectorstore,
+        chunk_size=100,
+        chunk_overlap=0,
+    )
+    ingestion.ingest_file(
+        orchid_path,
+        original_filename="orchid-notes.txt",
+        document_id="orchid-document",
+    )
+    ingestion.ingest_file(
+        harbor_path,
+        original_filename="harbor-notes.txt",
+        document_id="harbor-document",
+    )
+
+    rag = object.__new__(AdaptiveRAG)
+    rag.chunk_retriever = real_vectorstore.as_retriever(
+        search_kwargs={"k": 8}
+    )
+
+    # The query terms favor Harbor, but the strict filter must return only
+    # the Orchid document selected by the retrieval plan.
+    matches = rag.retrieve(
+        queries=["Harbor budget Monday"],
+        indexes=["chunks"],
+        document_id="orchid-document",
+    )
+
+    assert matches
+    assert {
+        document.metadata["document_id"] for document in matches
+    } == {"orchid-document"}
+
+    graph_rag = object.__new__(LangGraphRAG)
+    graph_rag.components = rag
+    sources = graph_rag._list_available_sources()
+
+    assert {
+        (source.document_id, source.filename) for source in sources
+    } == {
+        ("orchid-document", "orchid-notes.txt"),
+        ("harbor-document", "harbor-notes.txt"),
+    }
 
 
 def test_real_pdf_ingestion_preserves_page_metadata(

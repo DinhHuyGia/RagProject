@@ -1,0 +1,382 @@
+{
+  "strategy": "auto",
+  "top_k": 8,
+  "questions_evaluated": 1,
+  "answerable_questions": 1,
+  "unanswerable_questions": 0,
+  "delta_definition": "langgraph_minus_langchain",
+  "summary_delta": {
+    "answerable": {
+      "context_precision": 0.5428571428560713,
+      "context_recall": 0.0,
+      "faithfulness": -0.8888888888888888,
+      "answer_relevancy": -0.8843733743011613,
+      "factual_correctness": 0.24
+    },
+    "unanswerable": {
+      "refusal_correctness": null
+    }
+  },
+  "agentic_summary": {
+    "question_count": 1,
+    "task_count": 2,
+    "satisfied_task_count": 1,
+    "failed_task_count": 1,
+    "unresolved_task_count": 0,
+    "task_completion_rate": 0.5,
+    "question_completion_rate": 0.0,
+    "average_attempts_per_task": 2.0,
+    "retried_task_count": 1,
+    "total_task_retries": 2,
+    "retry_event_count": 2,
+    "targeted_retry_count": 2,
+    "targeted_retry_accuracy": 1.0,
+    "unnecessary_retry_count": 0,
+    "unnecessary_retry_rate": 0.0,
+    "source_routing_accuracy": 1.0,
+    "source_routing_precision": 1.0,
+    "source_routing_recall": 1.0,
+    "source_routing_sample_count": 1,
+    "total_pipeline_llm_calls": 8,
+    "average_pipeline_llm_calls": 8.0,
+    "average_elapsed_seconds": 51.80042140000296
+  },
+  "per_question_comparison": [
+    {
+      "id": "ecosystem-cloud-cross-document",
+      "answerable": true,
+      "score_delta": {
+        "context_precision": 0.5428571428560713,
+        "context_recall": 0.0,
+        "faithfulness": -0.8888888888888888,
+        "answer_relevancy": -0.8843733743011613,
+        "factual_correctness": 0.24
+      },
+      "langchain_response": "The website analysis describes Apple’s cross-device ecosystem as “ecosystem‑focused messaging” that encourages consumers to buy multiple Apple products, strengthens brand loyalty, increases the likelihood customers will continue investing in Apple’s hardware, software, and services, and is reflected in the site’s navigation/menu structure. The 2025 Form 10‑K lists that Apple designs, manufactures and markets smartphones, personal computers, tablets, wearables and accessories and sells related services and names product lines and operating systems, but it does not otherwise describe a cross‑device ecosystem.",
+      "langgraph_response": "The retrieved website analysis and 2025 Form 10‑K excerpts do not include any description of how Apple's cross-device ecosystem is integrated or how services interoperate across products, so they do not provide enough information to answer how each source describes Apple's cross-device ecosystem.",
+      "langgraph_retrieval_retries": 2,
+      "langgraph_agentic_metrics": {
+        "task_count": 2,
+        "satisfied_task_count": 1,
+        "failed_task_count": 1,
+        "unresolved_task_count": 0,
+        "task_completion_rate": 0.5,
+        "all_tasks_satisfied": false,
+        "average_attempts_per_task": 2.0,
+        "retried_task_count": 1,
+        "total_task_retries": 2,
+        "retry_event_count": 2,
+        "targeted_retry_count": 2,
+        "correct_retry_count": 2,
+        "targeted_retry_accuracy": 1.0,
+        "unnecessary_retry_count": 0,
+        "unnecessary_retry_rate": 0.0,
+        "expected_sources": [
+          "Apple 10K.pdf",
+          "apple_website_analysis.pdf"
+        ],
+        "selected_sources": [
+          "Apple 10K.pdf",
+          "apple_website_analysis.pdf"
+        ],
+        "source_routing_accuracy": 1.0,
+        "source_routing_precision": 1.0,
+        "source_routing_recall": 1.0,
+        "pipeline_llm_call_count": 8,
+        "pipeline_llm_call_counts": {
+          "retrieval_planner": 1,
+          "evidence_task_grader": 4,
+          "task_query_rewriter": 2,
+          "refusal_generator": 1
+        },
+        "elapsed_seconds": 51.80042140000296
+      }
+    }
+  ],
+  "systems": {
+    "langchain": {
+      "summary": {
+        "answerable": {
+          "context_precision": 0.16666666665,
+          "context_recall": 0.5,
+          "faithfulness": 0.8888888888888888,
+          "answer_relevancy": 0.8843733743011613,
+          "factual_correctness": 0.0
+        },
+        "unanswerable": {
+          "refusal_correctness": null
+        }
+      },
+      "metric_sample_counts": {
+        "answerable": {
+          "context_precision": 1,
+          "context_recall": 1,
+          "faithfulness": 1,
+          "answer_relevancy": 1,
+          "factual_correctness": 1
+        },
+        "unanswerable": {
+          "refusal_correctness": 0
+        }
+      },
+      "results": [
+        {
+          "id": "ecosystem-cloud-cross-document",
+          "category": "cross_document",
+          "answerable": true,
+          "user_input": "How do the website analysis and the 2025 Form 10-K each describe Apple's cross-device ecosystem?",
+          "reference": "The website analysis says Apple's messaging emphasizes that its devices work seamlessly together. The 10-K says Apple's cloud services keep customer content current and available across multiple Apple devices and Windows PCs.",
+          "response": "The website analysis describes Apple’s cross-device ecosystem as “ecosystem‑focused messaging” that encourages consumers to buy multiple Apple products, strengthens brand loyalty, increases the likelihood customers will continue investing in Apple’s hardware, software, and services, and is reflected in the site’s navigation/menu structure. The 2025 Form 10‑K lists that Apple designs, manufactures and markets smartphones, personal computers, tablets, wearables and accessories and sells related services and names product lines and operating systems, but it does not otherwise describe a cross‑device ecosystem.",
+          "retrieved_contexts": [
+            "This Annual Report on Form 10-K (“Form 10-K”) contains forward-looking statements, within the meaning of the Private Securities Litigation Reform Act of 1995,that involve risks and uncertainties. Many of the forward-looking statements are located in Part I, Item 1 of this Form 10-K under the heading “Business” and Part II, Item 7 of this Form 10-K under the heading “Management’s Discussion and Analysis of Financial Condition and Results of Operations.” Forward-lookingstatements provide current expectations of future events based on certain assumptions and include any statement that does not directly relate to any historicalor current fact. For example, statements in this Form 10-K regarding the potential future impact of macroeconomic conditions and tariffs and other measures on the Company’s business and results of operations are forward-looking statements. Forward-looking statements can also be identified by words such as “future,”“anticipates,” “believes,” “estimates,” “expects,” “intends,” “plans,” “predicts,” “will,” “would,” “could,” “can,” “may,” and similar terms. Forward-looking statementsare not guarantees of future performance and the Company’s actual results may differ significantly from the results discussed in the forward-looking statements. Factors that might cause such differences include, but are not limited to, those discussed in Part I, Item 1A of this Form 10-K under the heading “Risk Factors.”The Company assumes no obligation to revise or update any forward-looking statements for any reason, except as required by law. Unless otherwise stated, all information presented herein is based on the Company’s fiscal calendar, and references to particular years, quarters, months orperiods refer to the Company’s fiscal years ended in September and the associated quarters, months and periods of those fiscal years. Each of the terms the“Company” and “Apple” as used herein refers collectively to Apple Inc. and its wholly owned subsidiaries, unless otherwise stated. PART I Item 1. Business Company Background The Company designs, manufactures and markets smartphones, personal computers, tablets, wearables and accessories, and sells a variety of relatedservices. The Company’s fiscal year is the 52- or 53-week period that ends on the last Saturday of September. Products iPhone iPhone is the Company’s line of smartphones based on its iOS operating system. The iPhone line includes iPhone 17 Pro, iPhone Air™, iPhone 17, iPhone 16and iPhone 16e. Mac Mac is the Company’s line of personal computers based on its macOS operating system. The Mac line includes laptops MacBook Air and MacBook Pro,",
+            "Dinh 2 effectively, and provide an accessible and intuitive experience for its users. For global technology companies especially, along with being informational platforms, websites also serve as key components of brand identity and online commerce. As a result, the design, language, and visual presentation of a company’s website play an important role in shaping how customers perceive the organization and how they interact with its offerings. One such company is Apple. This report analyzes the effectiveness of Apple’s official website in communicating the company’s products, value proposition, and brand identity. The company’s core emphasis on innovation, simplicity, and premium design is often reflected in its digital presence. This brings us to the goal of the report: evaluates how clearly the website communicates Apple’s primary message, how well it caters to its intended audience, which include consumers seeking information about Apple products or potential buyers, and finally, does it translate the core values of the company, being the three mentioned above, effectively? There are four key aspects of the website that this report will analyze. The first aspect being an overview of Apple’s history and its role in the technology industry. The second aspect being the website’s language and tone used to communicate with its users. The third aspect being the layout and navigational design of the website. Last but not least, how the website uses attractive visuals to reinforce Apple’s branding and messaging. Through this analysis, the report aims to assess whether Apple’s website successfully supports both informational and commercial goals, while providing a smooth and engaging experience for its users. OVERVIEW When you think about technology products and services, most people’s first thought is Apple products, such as iPhones, airPods, and MacBooks, so why is it? This section will go over",
+            "This Annual Report on Form 10-K (“Form 10-K”) contains forward-looking statements, within the meaning of the Private Securities Litigation Reform Act of 1995,that involve risks and uncertainties. Many of the forward-looking statements are located in Part I, Item 1 of this Form 10-K under the heading “Business” and Part II, Item 7 of this Form 10-K under the heading “Management’s Discussion and Analysis of Financial Condition and Results of Operations.” Forward-lookingstatements provide current expectations of future events based on certain assumptions and include any statement that does not directly relate to any historicalor current fact. For example, statements in this Form 10-K regarding the potential future impact of macroeconomic conditions and tariffs and other measures on the Company’s business and results of operations are forward-looking statements. Forward-looking statements can also be identified by words such as “future,”“anticipates,” “believes,” “estimates,” “expects,” “intends,” “plans,” “predicts,” “will,” “would,” “could,” “can,” “may,” and similar terms. Forward-looking statementsare not guarantees of future performance and the Company’s actual results may differ significantly from the results discussed in the forward-looking statements. Factors that might cause such differences include, but are not limited to, those discussed in Part I, Item 1A of this Form 10-K under the heading “Risk Factors.”The Company assumes no obligation to revise or update any forward-looking statements for any reason, except as required by law. Unless otherwise stated, all information presented herein is based on the Company’s fiscal calendar, and references to particular years, quarters, months orperiods refer to the Company’s fiscal years ended in September and the associated quarters, months and periods of those fiscal years. Each of the terms the“Company” and “Apple” as used herein refers collectively to Apple Inc. and its wholly owned subsidiaries, unless otherwise stated. PART I Item 1. Business Company Background The Company designs, manufactures and markets smartphones, personal computers, tablets, wearables and accessories, and sells a variety of relatedservices. The Company’s fiscal year is the 52- or 53-week period that ends on the last Saturday of September. Products iPhone iPhone is the Company’s line of smartphones based on its iOS operating system. The iPhone line includes iPhone 17 Pro, iPhone Air™, iPhone 17, iPhone 16and iPhone 16e. Mac Mac is the Company’s line of personal computers based on its macOS operating system. The Mac line includes laptops MacBook Air and MacBook Pro,",
+            "Dinh 2 effectively, and provide an accessible and intuitive experience for its users. For global technology companies especially, along with being informational platforms, websites also serve as key components of brand identity and online commerce. As a result, the design, language, and visual presentation of a company’s website play an important role in shaping how customers perceive the organization and how they interact with its offerings. One such company is Apple. This report analyzes the effectiveness of Apple’s official website in communicating the company’s products, value proposition, and brand identity. The company’s core emphasis on innovation, simplicity, and premium design is often reflected in its digital presence. This brings us to the goal of the report: evaluates how clearly the website communicates Apple’s primary message, how well it caters to its intended audience, which include consumers seeking information about Apple products or potential buyers, and finally, does it translate the core values of the company, being the three mentioned above, effectively? There are four key aspects of the website that this report will analyze. The first aspect being an overview of Apple’s history and its role in the technology industry. The second aspect being the website’s language and tone used to communicate with its users. The third aspect being the layout and navigational design of the website. Last but not least, how the website uses attractive visuals to reinforce Apple’s branding and messaging. Through this analysis, the report aims to assess whether Apple’s website successfully supports both informational and commercial goals, while providing a smooth and engaging experience for its users. OVERVIEW When you think about technology products and services, most people’s first thought is Apple products, such as iPhones, airPods, and MacBooks, so why is it? This section will go over",
+            "Item 7. Management’s Discussion and Analysis of Financial Condition and Results of Operations The following discussion should be read in conjunction with the consolidated financial statements and accompanying notes included in Part II, Item 8 of this Form 10-K. This Item generally discusses 2025 and 2024 items and year-to-year comparisons between 2025 and 2024. Discussions of 2023 items and year-to-year comparisons between 2024 and 2023 are not included, and can be found in “Management’s Discussion and Analysis of Financial Condition and Results ofOperations” in Part II, Item 7 of the Company’s Annual Report on Form 10-K for the fiscal year ended September 28, 2024. Product, Service and Software Announcements The Company announces new product, service and software offerings at various times during the year. Significant announcements during fiscal year 2025 included the following: First Quarter 2025: • MacBook Pro • Mac mini• iMac• iPad mini Second Quarter 2025: • iPhone 16e • iPad Air• iPad• MacBook Air • Mac Studio Third Quarter 2025: • iOS 26, macOS Tahoe 26, iPadOS 26, watchOS 26, visionOS 26 and tvOS 26 Fourth Quarter 2025: • iPhone 17, iPhone Air, iPhone 17 Pro and iPhone 17 Pro Max • Apple Watch Series 11, Apple Watch SE 3 and Apple Watch Ultra 3• AirPods Pro 3 Fiscal Period The Company’s fiscal year is the 52- or 53-week period that ends on the last Saturday of September. An additional week is included in the first fiscal quarterevery five or six years to realign the Company’s fiscal quarters with calendar quarters, which occurred in the first quarter of 2023. The Company’s fiscal years 2025 and 2024 spanned 52 weeks each, whereas fiscal year 2023 spanned 53 weeks. Macroeconomic Conditions Macroeconomic conditions, including inflation, interest rates and currency fluctuations, have directly and indirectly impacted, and could in the future materiallyimpact, the Company’s results of operations and financial condition. Apple Inc. | 2025 Form 10-K | 21",
+            "Dinh 7 Apple encourages consumers to see value in purchasing multiple Apple products. This ecosystem-focused messaging strengthens brand loyalty while also increasing the likelihood that customers will continue investing in Apple’s hardware, software, and services. Overall, Apple’s website language is highly effective at communicating its brand values while remaining accessible to a wide audience. Through concise messaging, aspirational tone, and user-centered descriptions, Apple successfully highlights the benefits of its products while maintaining a consistent and recognizable brand voice across its website. LAYOUT AND DESIGN FEATURES The layout and design of a website is vital in how effective the company communicates information about its products and services. Let’s take a look at how Apple does this. Apple’s website is structured with a clean and minimalist design that prioritizes ease of navigation and clarity. This design reflects Apple’s broader philosophy of simplicity and user-centered design, which has long been the company’s defining branding and products. One of the most important design features of Apple’s website is its straightforward navigation system. At the top of the homepage, there is a fixed navigation bar that provides access to the company’s main product categories, including Mac, iPad, iPhone, Watch, Vision, etc. One aspect of this navigation bar is that it remains constant throughout the website, meaning that whichever page the customer is on, the navigation bar always provides a quick shortcut to either browse a different product or go back to the homepage. This feature also helps reduce any confusion a customer may face when navigating the website. The structure of the menu reflects Apple’s product ecosystem, allowing users to quickly locate the type of device or service that they are interested in. Furthermore, because the menu contains a small number of clearly labeled",
+            "Item 7. Management’s Discussion and Analysis of Financial Condition and Results of Operations The following discussion should be read in conjunction with the consolidated financial statements and accompanying notes included in Part II, Item 8 of this Form 10-K. This Item generally discusses 2025 and 2024 items and year-to-year comparisons between 2025 and 2024. Discussions of 2023 items and year-to-year comparisons between 2024 and 2023 are not included, and can be found in “Management’s Discussion and Analysis of Financial Condition and Results ofOperations” in Part II, Item 7 of the Company’s Annual Report on Form 10-K for the fiscal year ended September 28, 2024. Product, Service and Software Announcements The Company announces new product, service and software offerings at various times during the year. Significant announcements during fiscal year 2025 included the following: First Quarter 2025: • MacBook Pro • Mac mini• iMac• iPad mini Second Quarter 2025: • iPhone 16e • iPad Air• iPad• MacBook Air • Mac Studio Third Quarter 2025: • iOS 26, macOS Tahoe 26, iPadOS 26, watchOS 26, visionOS 26 and tvOS 26 Fourth Quarter 2025: • iPhone 17, iPhone Air, iPhone 17 Pro and iPhone 17 Pro Max • Apple Watch Series 11, Apple Watch SE 3 and Apple Watch Ultra 3• AirPods Pro 3 Fiscal Period The Company’s fiscal year is the 52- or 53-week period that ends on the last Saturday of September. An additional week is included in the first fiscal quarterevery five or six years to realign the Company’s fiscal quarters with calendar quarters, which occurred in the first quarter of 2023. The Company’s fiscal years 2025 and 2024 spanned 52 weeks each, whereas fiscal year 2023 spanned 53 weeks. Macroeconomic Conditions Macroeconomic conditions, including inflation, interest rates and currency fluctuations, have directly and indirectly impacted, and could in the future materiallyimpact, the Company’s results of operations and financial condition. Apple Inc. | 2025 Form 10-K | 21",
+            "This Annual Report on Form 10-K (“Form 10-K”) contains forward-looking statements, within the meaning of the Private Securities Litigation Reform Act of 1995,that involve risks and uncertainties. Many of the forward-looking statements are located in Part I, Item 1 of this Form 10-K under the heading “Business” and Part II, Item 7 of this Form 10-K under the heading “Management’s Discussion and Analysis of Financial Condition and Results of Operations.” Forward-lookingstatements provide current expectations of future events based on certain assumptions and include any statement that does not directly relate to any historicalor current fact. For example, statements in this Form 10-K regarding the potential future impact of macroeconomic conditions and tariffs and other measures on the Company’s business and results of operations are forward-looking statements. Forward-looking statements can also be identified by words such as “future,”“anticipates,” “believes,” “estimates,” “expects,” “intends,” “plans,” “predicts,” “will,” “would,” “could,” “can,” “may,” and similar terms. Forward-looking statementsare not guarantees of future performance and the Company’s actual results may differ significantly from the results discussed in the forward-looking statements. Factors that might cause such differences include, but are not limited to, those discussed in Part I, Item 1A of this Form 10-K under the heading “Risk Factors.”The Company assumes no obligation to revise or update any forward-looking statements for any reason, except as required by law. Unless otherwise stated, all information presented herein is based on the Company’s fiscal calendar, and references to particular years, quarters, months orperiods refer to the Company’s fiscal years ended in September and the associated quarters, months and periods of those fiscal years. Each of the terms the“Company” and “Apple” as used herein refers collectively to Apple Inc. and its wholly owned subsidiaries, unless otherwise stated. PART I Item 1. Business Company Background The Company designs, manufactures and markets smartphones, personal computers, tablets, wearables and accessories, and sells a variety of relatedservices. The Company’s fiscal year is the 52- or 53-week period that ends on the last Saturday of September. Products iPhone iPhone is the Company’s line of smartphones based on its iOS operating system. The iPhone line includes iPhone 17 Pro, iPhone Air™, iPhone 17, iPhone 16and iPhone 16e. Mac Mac is the Company’s line of personal computers based on its macOS operating system. The Mac line includes laptops MacBook Air and MacBook Pro,"
+          ],
+          "elapsed_seconds": 24.70330670000112,
+          "resolved_strategy": "decomposition",
+          "routing_reason": "This is a comparison question asking for how two distinct sources (the website analysis and the 2025 Form 10-K) each describe Apple’s cross-device ecosystem. I should retrieve and summarize the description from each source separately and then highlight similarities and differences, so decomposing into two retrievals and a comparative synthesis is appropriate.",
+          "retrieval_queries": [
+            "How do the website analysis and the 2025 Form 10-K each describe Apple's cross-device ecosystem?",
+            "What does the website analysis say about Apple’s cross-device ecosystem, including its features, benefits, and user experience?",
+            "What does Apple’s 2025 Form 10-K disclose about the company’s cross-device ecosystem, including strategic objectives, features, and business implications?",
+            "How do the website analysis and Apple’s 2025 Form 10-K compare—what are the similarities and differences in their descriptions of Apple’s cross-device ecosystem?"
+          ],
+          "retrieval_retries": 0,
+          "retrieval_attempts": 1,
+          "context_precision": 0.16666666665,
+          "context_recall": 0.5,
+          "faithfulness": 0.8888888888888888,
+          "answer_relevancy": 0.8843733743011613,
+          "factual_correctness": 0.0,
+          "refusal_correctness": null,
+          "refusal_detected": null,
+          "refusal_topic_coverage": null
+        }
+      ]
+    },
+    "langgraph": {
+      "summary": {
+        "answerable": {
+          "context_precision": 0.7095238095060713,
+          "context_recall": 0.5,
+          "faithfulness": 0.0,
+          "answer_relevancy": 0.0,
+          "factual_correctness": 0.24
+        },
+        "unanswerable": {
+          "refusal_correctness": null
+        }
+      },
+      "metric_sample_counts": {
+        "answerable": {
+          "context_precision": 1,
+          "context_recall": 1,
+          "faithfulness": 1,
+          "answer_relevancy": 1,
+          "factual_correctness": 1
+        },
+        "unanswerable": {
+          "refusal_correctness": 0
+        }
+      },
+      "results": [
+        {
+          "id": "ecosystem-cloud-cross-document",
+          "category": "cross_document",
+          "answerable": true,
+          "user_input": "How do the website analysis and the 2025 Form 10-K each describe Apple's cross-device ecosystem?",
+          "reference": "The website analysis says Apple's messaging emphasizes that its devices work seamlessly together. The 10-K says Apple's cloud services keep customer content current and available across multiple Apple devices and Windows PCs.",
+          "response": "The retrieved website analysis and 2025 Form 10‑K excerpts do not include any description of how Apple's cross-device ecosystem is integrated or how services interoperate across products, so they do not provide enough information to answer how each source describes Apple's cross-device ecosystem.",
+          "retrieved_contexts": [
+            "Dinh 6 of technological development. Overall, this tone supports Apple’s long-standing branding strategy of presenting its product as premium and forward thinking. Apple’s language strategy also reflects the broader audience the company is targeting. For example, while Apple products appeal to technology enthusiasts, they are also marketed to everyday consumers who may not have the same technical expertise. As a result of this, the language on the website avoids overly complicated technical jargon in favor of more user-focused description. For example, instead of going into unnecessary detail explaining the specs of a processor, Apple often explains how technical improvements translate into real life situations, such as better photo editing, improved gaming experience, or longer battery life. This approach helps potential customers understand how the product will improve their daily activities rather than focusing exclusively on technical details. However, in most product pages, there is still space for technical language that appeals to the other end of the customer spectrums, so while Apple does cater to everyday consumers, they still care about consumers with technical knowledge. In addition to selling individual products, Apple’s website language also promotes the broader Apple ecosystem. Messaging throughout the site frequently emphasizes how seamlessly Apple devices work together, highlighting the benefits of owning multiple Apple products. Phrases such as “It just works,” along with descriptions of features like AirDrop, iCloud syncing, and device continuity, reinforce the idea that Apple devices are part of an integrated digital experience. For example, the website often explains how users can start a task on an iPhone and continue it on a Mac, or use an Apple Watch to access notifications and health data connected to their iPhone. By presenting these devices as interconnected rather than standalone products,",
+            "This Annual Report on Form 10-K (“Form 10-K”) contains forward-looking statements, within the meaning of the Private Securities Litigation Reform Act of 1995,that involve risks and uncertainties. Many of the forward-looking statements are located in Part I, Item 1 of this Form 10-K under the heading “Business” and Part II, Item 7 of this Form 10-K under the heading “Management’s Discussion and Analysis of Financial Condition and Results of Operations.” Forward-lookingstatements provide current expectations of future events based on certain assumptions and include any statement that does not directly relate to any historicalor current fact. For example, statements in this Form 10-K regarding the potential future impact of macroeconomic conditions and tariffs and other measures on the Company’s business and results of operations are forward-looking statements. Forward-looking statements can also be identified by words such as “future,”“anticipates,” “believes,” “estimates,” “expects,” “intends,” “plans,” “predicts,” “will,” “would,” “could,” “can,” “may,” and similar terms. Forward-looking statementsare not guarantees of future performance and the Company’s actual results may differ significantly from the results discussed in the forward-looking statements. Factors that might cause such differences include, but are not limited to, those discussed in Part I, Item 1A of this Form 10-K under the heading “Risk Factors.”The Company assumes no obligation to revise or update any forward-looking statements for any reason, except as required by law. Unless otherwise stated, all information presented herein is based on the Company’s fiscal calendar, and references to particular years, quarters, months orperiods refer to the Company’s fiscal years ended in September and the associated quarters, months and periods of those fiscal years. Each of the terms the“Company” and “Apple” as used herein refers collectively to Apple Inc. and its wholly owned subsidiaries, unless otherwise stated. PART I Item 1. Business Company Background The Company designs, manufactures and markets smartphones, personal computers, tablets, wearables and accessories, and sells a variety of relatedservices. The Company’s fiscal year is the 52- or 53-week period that ends on the last Saturday of September. Products iPhone iPhone is the Company’s line of smartphones based on its iOS operating system. The iPhone line includes iPhone 17 Pro, iPhone Air™, iPhone 17, iPhone 16and iPhone 16e. Mac Mac is the Company’s line of personal computers based on its macOS operating system. The Mac line includes laptops MacBook Air and MacBook Pro,",
+            "Dinh 17 demonstrations and lifestyle visuals help users understand both appearance and functionality of Apple’s products. Together, these elements combined to provide an environment that not only informs customers, but also supports Apple’s broader marketing strategy by presenting its products as part of an ecosystem where devices connect and work seamlessly with each other. As a result, Apple’s website successfully serves both informational and commercial purposes while strengthening the company’s global brand identity.",
+            "Item 7. Management’s Discussion and Analysis of Financial Condition and Results of Operations The following discussion should be read in conjunction with the consolidated financial statements and accompanying notes included in Part II, Item 8 of this Form 10-K. This Item generally discusses 2025 and 2024 items and year-to-year comparisons between 2025 and 2024. Discussions of 2023 items and year-to-year comparisons between 2024 and 2023 are not included, and can be found in “Management’s Discussion and Analysis of Financial Condition and Results ofOperations” in Part II, Item 7 of the Company’s Annual Report on Form 10-K for the fiscal year ended September 28, 2024. Product, Service and Software Announcements The Company announces new product, service and software offerings at various times during the year. Significant announcements during fiscal year 2025 included the following: First Quarter 2025: • MacBook Pro • Mac mini• iMac• iPad mini Second Quarter 2025: • iPhone 16e • iPad Air• iPad• MacBook Air • Mac Studio Third Quarter 2025: • iOS 26, macOS Tahoe 26, iPadOS 26, watchOS 26, visionOS 26 and tvOS 26 Fourth Quarter 2025: • iPhone 17, iPhone Air, iPhone 17 Pro and iPhone 17 Pro Max • Apple Watch Series 11, Apple Watch SE 3 and Apple Watch Ultra 3• AirPods Pro 3 Fiscal Period The Company’s fiscal year is the 52- or 53-week period that ends on the last Saturday of September. An additional week is included in the first fiscal quarterevery five or six years to realign the Company’s fiscal quarters with calendar quarters, which occurred in the first quarter of 2023. The Company’s fiscal years 2025 and 2024 spanned 52 weeks each, whereas fiscal year 2023 spanned 53 weeks. Macroeconomic Conditions Macroeconomic conditions, including inflation, interest rates and currency fluctuations, have directly and indirectly impacted, and could in the future materiallyimpact, the Company’s results of operations and financial condition. Apple Inc. | 2025 Form 10-K | 21",
+            "Dinh 7 Apple encourages consumers to see value in purchasing multiple Apple products. This ecosystem-focused messaging strengthens brand loyalty while also increasing the likelihood that customers will continue investing in Apple’s hardware, software, and services. Overall, Apple’s website language is highly effective at communicating its brand values while remaining accessible to a wide audience. Through concise messaging, aspirational tone, and user-centered descriptions, Apple successfully highlights the benefits of its products while maintaining a consistent and recognizable brand voice across its website. LAYOUT AND DESIGN FEATURES The layout and design of a website is vital in how effective the company communicates information about its products and services. Let’s take a look at how Apple does this. Apple’s website is structured with a clean and minimalist design that prioritizes ease of navigation and clarity. This design reflects Apple’s broader philosophy of simplicity and user-centered design, which has long been the company’s defining branding and products. One of the most important design features of Apple’s website is its straightforward navigation system. At the top of the homepage, there is a fixed navigation bar that provides access to the company’s main product categories, including Mac, iPad, iPhone, Watch, Vision, etc. One aspect of this navigation bar is that it remains constant throughout the website, meaning that whichever page the customer is on, the navigation bar always provides a quick shortcut to either browse a different product or go back to the homepage. This feature also helps reduce any confusion a customer may face when navigating the website. The structure of the menu reflects Apple’s product ecosystem, allowing users to quickly locate the type of device or service that they are interested in. Furthermore, because the menu contains a small number of clearly labeled",
+            "Apple Inc. Form 10-K For the Fiscal Year Ended September 27, 2025 TABLE OF CONTENTS Page Part I Item 1. Business 1 Item 1A. Risk Factors 5 Item 1B. Unresolved Staff Comments 17 Item 1C. Cybersecurity 17 Item 2. Properties 17 Item 3. Legal Proceedings 18 Item 4. Mine Safety Disclosures 18 Part II Item 5. Market for Registrant’s Common Equity, Related Stockholder Matters and Issuer Purchases of Equity Securities19 Item 6. [Reserved] 20 Item 7. Management’s Discussion and Analysis of Financial Condition and Results of Operations 21 Item 7A. Quantitative and Qualitative Disclosures About Market Risk 27 Item 8. Financial Statements and Supplementary Data 28 Item 9. Changes in and Disagreements with Accountants on Accounting and Financial Disclosure 52 Item 9A. Controls and Procedures 52 Item 9B. Other Information 53 Item 9C. Disclosure Regarding Foreign Jurisdictions that Prevent Inspections 53 Part III Item 10. Directors, Executive Officers and Corporate Governance 53 Item 11. Executive Compensation 53 Item 12. Security Ownership of Certain Beneficial Owners and Management and Related Stockholder Matters53 Item 13. Certain Relationships and Related Transactions, and Director Independence 53 Item 14. Principal Accountant Fees and Services 53 Part IV Item 15. Exhibit and Financial Statement Schedules 54 Item 16. Form 10-K Summary 57",
+            "Dinh 4 simplifying the company’s product line-up from over 300 different products and variations to just 4 core products, being the iMac, iBook, Power Macintosh G3, and PowerBook G3. This decision saved Apple from bankruptcy and allowed the company to focus its resources to make higher quality products. Following this, in 1988, Apple released the iMac, a distinctive desktop computer that helped restore the company’s brand identity and financial stability. This period marked the beginning of Apple’s transformation from a struggling computer manufacturer into a global consumer technology leader (Encyclopaedia Britannica, 2024). Apple’s influence in the technology industry expanded significantly in the early 2000s with the release of several groundbreaking products. The iPod, introduced in 2001, transformed the digital music industry by allowing users to store and organize large libraries of songs. Apple further reshaped the technology landscape with the release of the iPhone in 2007, which combined a phone, internet device, and media player into a single touch screen device. The iPhone quickly became one of the most successful consumer products in history and played a major role in establishing the modern smartphone industry (Time Magazine, 2017). Today, Apple plays a major role in the global technology industry as both a hardware manufacturer and a digital service provider. The company produces a wide range of iconic devices, being the iPhone, iPad tablets, MacBook computers, AirPods, and Apple Watch. In recent years, Apple has also expanded its services, which include iCloud, Apple Music, Apple Pay, and Apple+. These services are integrated across Apple devices, meaning that the user can access data and content across a unified ecosystem. Through its innovation, design, and product integration, Apple continues to shape trends in the global technology landscape and maintain a strong global brand.",
+            "incident response. A dedicated Supplier Trust team manages information security risks the Company is exposed to through its supplier relationships. The Company has processes to log, track, address, andescalate for further assessment and report, as appropriate, cybersecurity incidents across the Company and its suppliers to senior management and the Auditand Finance Committee (“Audit Committee”) of the Board. The Company’s enterprise risk management program is designed to identify, assess, and monitor the Company’s business risks, including financial, operational, compliance and reputational risks, and reflects management’s assessment of cybersecurity risks. The Audit Committee assists the Board in the oversight and monitoring of cybersecurity matters. The Audit Committee regularly reviews and discusses the Company’s cybersecurity risks with management, including the Company’s Head of Corporate Information Security, its General Counsel and the Heads ofCompliance and Business Conduct, Business Assurance, and Internal Audit, and receives updates, as necessary, regarding cybersecurity incidents. The Chairof the Audit Committee regularly reports the substance of such reviews and discussions to the Board, as necessary, and recommends to the Board such actions as the Audit Committee deems appropriate. For a discussion of the Company’s cybersecurity-related risks, see Item 1A of this Form 10-K under the heading “Risk Factors.” Item 2. Properties The Company’s headquarters is located in Cupertino, California. As of September 27, 2025, the Company owned or leased facilities and land for corporatefunctions, R&D, data centers, retail and other purposes at locations throughout the U.S. and in various places outside the U.S. The Company believes its existing facilities and equipment, which are used by all reportable segments, are in good operating condition and are suitable for the conduct of its business. Apple Inc. | 2025 Form 10-K | 17"
+          ],
+          "elapsed_seconds": 51.80042140000296,
+          "resolved_strategy": "decomposition",
+          "routing_reason": "The retrieval plan contains multiple evidence tasks, so the graph selected decomposition.",
+          "available_sources": [
+            {
+              "document_id": "eval-apple-2025-10k",
+              "filename": "Apple 10K.pdf"
+            },
+            {
+              "document_id": "eval-apple-website",
+              "filename": "apple_website_analysis.pdf"
+            }
+          ],
+          "retrieval_plan": {
+            "tasks": [
+              {
+                "task_id": "evidence-1",
+                "subquestion": "How does the website analysis describe Apple's cross-device ecosystem?",
+                "search_query": "cross-device ecosystem continuity Handoff iCloud seamless integration",
+                "source_hint": "apple_website_analysis.pdf",
+                "source_document_id": "eval-apple-website",
+                "status": "satisfied",
+                "attempts": 1,
+                "evidence_chunk_ids": [
+                  "eval-apple-website:5",
+                  "eval-apple-website:16",
+                  "eval-apple-website:6",
+                  "eval-apple-website:3",
+                  "eval-apple-website:9",
+                  "eval-apple-website:13",
+                  "eval-apple-website:12",
+                  "eval-apple-website:15"
+                ],
+                "grade_reason": "The retrieved excerpts explicitly describe the website’s cross-device ecosystem: they state the site promotes a broader Apple ecosystem, emphasizes seamless integration (e.g., “It just works”), and cite specific features—AirDrop, iCloud syncing, device continuity (start on iPhone, continue on Mac), and Apple Watch access to notifications/health data—while also noting the messaging encourages buying multiple devices and strengthens brand loyalty."
+              },
+              {
+                "task_id": "evidence-2",
+                "subquestion": "How does the 2025 Form 10-K describe Apple's cross-device ecosystem?",
+                "search_query": "Apple 2025 Form 10-K \"ecosystem\" \"work together\" continuity integrate interoperate devices services",
+                "source_hint": "Apple 10K.pdf",
+                "source_document_id": "eval-apple-2025-10k",
+                "status": "failed",
+                "attempts": 3,
+                "evidence_chunk_ids": [
+                  "eval-apple-2025-10k:4",
+                  "eval-apple-2025-10k:45",
+                  "eval-apple-2025-10k:3",
+                  "eval-apple-2025-10k:40",
+                  "eval-apple-2025-10k:5",
+                  "eval-apple-2025-10k:63",
+                  "eval-apple-2025-10k:57",
+                  "eval-apple-2025-10k:48",
+                  "eval-apple-2025-10k:11",
+                  "eval-apple-2025-10k:102",
+                  "eval-apple-2025-10k:56",
+                  "eval-apple-2025-10k:10",
+                  "eval-apple-2025-10k:101"
+                ],
+                "grade_reason": "The excerpts list Apple’s product lines and services and note services growth and bundling, but they do not include any language describing an integrated or cross-device ecosystem (e.g., integration/continuity across devices, ecosystem strategy, or how services interoperate across products). The explicit description of Apple’s cross-device ecosystem is missing."
+              }
+            ],
+            "requires_multiple_sources": true,
+            "reason": "The user asks how each of two specific sources (website analysis and the 2025 Form 10‑K) describes the cross-device ecosystem; each source must be searched separately."
+          },
+          "retrieval_queries": [
+            "Apple 2025 Form 10-K \"ecosystem\" \"work together\" continuity integrate interoperate devices services"
+          ],
+          "retrieval_scopes": [
+            {
+              "query": "Apple 2025 Form 10-K \"ecosystem\" \"work together\" continuity integrate interoperate devices services",
+              "source_document_id": "eval-apple-2025-10k",
+              "task_id": "evidence-2"
+            }
+          ],
+          "retrieval_retries": 2,
+          "retrieval_attempts": 3,
+          "context_sufficient": false,
+          "context_grade_reason": "evidence-2: The excerpts list Apple’s product lines and services and note services growth and bundling, but they do not include any language describing an integrated or cross-device ecosystem (e.g., integration/continuity across devices, ecosystem strategy, or how services interoperate across products). The explicit description of Apple’s cross-device ecosystem is missing.",
+          "all_evidence_tasks_satisfied": false,
+          "evidence_grade_reason": "evidence-2: The excerpts list Apple’s product lines and services and note services growth and bundling, but they do not include any language describing an integrated or cross-device ecosystem (e.g., integration/continuity across devices, ecosystem strategy, or how services interoperate across products). The explicit description of Apple’s cross-device ecosystem is missing.",
+          "task_retry_events": [
+            {
+              "task_id": "evidence-2",
+              "retry_type": "targeted",
+              "status_before": "insufficient",
+              "query_before": "cross-device ecosystem Form 10-K 2025 continuity integration hardware software services iCloud",
+              "query_after": "Apple Form 10-K 2025 ecosystem continuity interoperate integration devices software services seamless platform",
+              "source_document_id": "eval-apple-2025-10k"
+            },
+            {
+              "task_id": "evidence-2",
+              "retry_type": "targeted",
+              "status_before": "insufficient",
+              "query_before": "Apple Form 10-K 2025 ecosystem continuity interoperate integration devices software services seamless platform",
+              "query_after": "Apple 2025 Form 10-K \"ecosystem\" \"work together\" continuity integrate interoperate devices services",
+              "source_document_id": "eval-apple-2025-10k"
+            }
+          ],
+          "pipeline_llm_call_counts": {
+            "retrieval_planner": 1,
+            "evidence_task_grader": 4,
+            "task_query_rewriter": 2,
+            "refusal_generator": 1
+          },
+          "pipeline_llm_call_count": 8,
+          "context_precision": 0.7095238095060713,
+          "context_recall": 0.5,
+          "faithfulness": 0.0,
+          "answer_relevancy": 0.0,
+          "factual_correctness": 0.24,
+          "refusal_correctness": null,
+          "refusal_detected": null,
+          "refusal_topic_coverage": null,
+          "agentic_metrics": {
+            "task_count": 2,
+            "satisfied_task_count": 1,
+            "failed_task_count": 1,
+            "unresolved_task_count": 0,
+            "task_completion_rate": 0.5,
+            "all_tasks_satisfied": false,
+            "average_attempts_per_task": 2.0,
+            "retried_task_count": 1,
+            "total_task_retries": 2,
+            "retry_event_count": 2,
+            "targeted_retry_count": 2,
+            "correct_retry_count": 2,
+            "targeted_retry_accuracy": 1.0,
+            "unnecessary_retry_count": 0,
+            "unnecessary_retry_rate": 0.0,
+            "expected_sources": [
+              "Apple 10K.pdf",
+              "apple_website_analysis.pdf"
+            ],
+            "selected_sources": [
+              "Apple 10K.pdf",
+              "apple_website_analysis.pdf"
+            ],
+            "source_routing_accuracy": 1.0,
+            "source_routing_precision": 1.0,
+            "source_routing_recall": 1.0,
+            "pipeline_llm_call_count": 8,
+            "pipeline_llm_call_counts": {
+              "retrieval_planner": 1,
+              "evidence_task_grader": 4,
+              "task_query_rewriter": 2,
+              "refusal_generator": 1
+            },
+            "elapsed_seconds": 51.80042140000296
+          }
+        }
+      ],
+      "agentic_summary": {
+        "question_count": 1,
+        "task_count": 2,
+        "satisfied_task_count": 1,
+        "failed_task_count": 1,
+        "unresolved_task_count": 0,
+        "task_completion_rate": 0.5,
+        "question_completion_rate": 0.0,
+        "average_attempts_per_task": 2.0,
+        "retried_task_count": 1,
+        "total_task_retries": 2,
+        "retry_event_count": 2,
+        "targeted_retry_count": 2,
+        "targeted_retry_accuracy": 1.0,
+        "unnecessary_retry_count": 0,
+        "unnecessary_retry_rate": 0.0,
+        "source_routing_accuracy": 1.0,
+        "source_routing_precision": 1.0,
+        "source_routing_recall": 1.0,
+        "source_routing_sample_count": 1,
+        "total_pipeline_llm_calls": 8,
+        "average_pipeline_llm_calls": 8.0,
+        "average_elapsed_seconds": 51.80042140000296
+      }
+    }
+  }
+}

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import re
 from collections.abc import Callable
 from dataclasses import dataclass
 from pathlib import Path
@@ -24,6 +25,27 @@ LOADERS: dict[str, LoaderFactory] = {
     ".txt": lambda path: TextLoader(path, encoding="utf-8"),
     ".md": lambda path: TextLoader(path, encoding="utf-8"),
 }
+
+MOJIBAKE_REPLACEMENTS = {
+    "\u00c2": "",
+    "\u00e2\u20ac\u02dc": "‘",
+    "\u00e2\u20ac\u2122": "’",
+    "\u00e2\u20ac\u0153": "“",
+    "\u00e2\u20ac\u009d": "”",
+    "\u00e2\u20ac\u201c": "–",
+    "\u00e2\u20ac\u201d": "—",
+    "\u00e2\u20ac\u00a6": "…",
+}
+
+
+def normalize_pdf_text(text: str) -> str:
+    """Repair common PDF encoding artifacts and fragmented whitespace."""
+    for broken, replacement in MOJIBAKE_REPLACEMENTS.items():
+        text = text.replace(broken, replacement)
+
+    # Join words split by line wrapping before collapsing other whitespace.
+    text = re.sub(r"(?<=\w)-\s*\n\s*(?=\w)", "", text)
+    return re.sub(r"\s+", " ", text).strip()
 
 @dataclass
 class IngestionResult:
@@ -70,6 +92,13 @@ class DocumentIngestionService:
 
         loader = LOADERS[extension](str(file_path))
         documents = loader.load()
+
+        if extension == ".pdf":
+            for document in documents:
+                document.page_content = normalize_pdf_text(
+                    document.page_content
+                )
+
         documents = [
             document
             for document in documents

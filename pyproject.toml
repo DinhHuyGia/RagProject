@@ -14,6 +14,7 @@ dependencies = [
     "docx2txt>=0.9,<1",
     "fastapi>=0.115,<1",
     "langchain-classic>=1.0,<2",
+    "langgraph>=1,<2",
     "langchain-chroma>=1.0,<2",
     "langchain-community>=0.4,<1",
     "langchain-core>=1.0,<2",
@@ -36,6 +37,10 @@ dev = [
     "pytest-cov>=6,<8",
     "reportlab>=4.2,<5",
     "ruff>=0.11,<1",
+]
+
+eval = [
+    "ragas>=0.4.3,<0.5",
 ]
 
 [project.scripts]
