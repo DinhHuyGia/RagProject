@@ -1,6 +1,6 @@
 import pytest
 
-from rag_tutorial.shared import get_base_url
+from grounded.shared import get_base_url
 
 
 def test_get_base_url_requires_azure_endpoint(

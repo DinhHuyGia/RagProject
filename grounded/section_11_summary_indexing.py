@@ -10,7 +10,7 @@ from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.runnables import RunnablePassthrough
 from langchain_core.stores import InMemoryByteStore
 
-from rag_tutorial.shared import (
+from grounded.shared import (
     create_base_rag_prompt,
     create_embeddings,
     create_llm,

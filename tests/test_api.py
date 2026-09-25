@@ -5,18 +5,18 @@ from typing import Any
 import pytest
 from fastapi.testclient import TestClient
 
-from rag_tutorial.adaptive_rag import (
+from grounded.adaptive_rag import (
     AdaptiveAnswer,
     AdaptiveRAG,
     SourceReference,
 )
-from rag_tutorial.api import (
+from grounded.api import (
     AppServices,
     AppSettings,
     create_app,
 )
-from rag_tutorial.document_registry import DocumentRegistry
-from rag_tutorial.ingestion import IngestionResult
+from grounded.document_registry import DocumentRegistry
+from grounded.ingestion import IngestionResult
 
 
 class FakeIngestionService:

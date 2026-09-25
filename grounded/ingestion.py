@@ -14,7 +14,7 @@ from langchain_community.document_loaders import (
 )
 from langchain_core.documents import Document
 
-from rag_tutorial.shared import create_text_splitter
+from grounded.shared import create_text_splitter
 
 LoaderFactory = Callable[[str], object]
 

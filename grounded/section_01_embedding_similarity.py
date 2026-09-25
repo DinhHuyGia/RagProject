@@ -2,7 +2,7 @@
 
 import numpy as np
 
-from rag_tutorial.shared import create_embeddings
+from grounded.shared import create_embeddings
 
 
 def cosine_similarity(vector_a, vector_b) -> float:

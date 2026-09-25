@@ -10,12 +10,12 @@ from langchain_chroma import Chroma
 from langchain_core.embeddings import Embeddings
 from reportlab.pdfgen import canvas
 
-from rag_tutorial.adaptive_rag import AdaptiveRAG
-from rag_tutorial.ingestion import (
+from grounded.adaptive_rag import AdaptiveRAG
+from grounded.ingestion import (
     DocumentIngestionService,
     normalize_pdf_text,
 )
-from rag_tutorial.langgraph_rag import LangGraphRAG
+from grounded.langgraph_rag import LangGraphRAG
 
 
 class DeterministicKeywordEmbeddings(Embeddings):

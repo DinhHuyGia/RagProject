@@ -10,9 +10,9 @@ from typing import Any
 from langchain_core.documents import Document
 from openai import AsyncOpenAI
 
-from rag_tutorial.adaptive_rag import AdaptiveRAG, RequestedStrategy
-from rag_tutorial.langgraph_rag import LangGraphRAG
-from rag_tutorial.shared import get_api_key, get_base_url
+from grounded.adaptive_rag import AdaptiveRAG, RequestedStrategy
+from grounded.langgraph_rag import LangGraphRAG
+from grounded.shared import get_api_key, get_base_url
 
 if __package__:
     from .compare_rag import STRATEGIES

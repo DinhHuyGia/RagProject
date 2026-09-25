@@ -5,8 +5,8 @@ from pathlib import Path
 
 from openai import AsyncOpenAI
 
-from rag_tutorial.adaptive_rag import AdaptiveRAG
-from rag_tutorial.shared import (
+from grounded.adaptive_rag import AdaptiveRAG
+from grounded.shared import (
     format_docs,
     get_api_key,
     get_base_url,

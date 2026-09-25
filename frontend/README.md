@@ -1,7 +1,7 @@
 # Grounded frontend
 
 This folder contains the React and TypeScript interface for the Adaptive RAG
-API in `rag_tutorial/api.py`.
+API in `grounded/api.py`.
 
 See the [root README](../README.md) for complete Python, Azure OpenAI, and
 fresh-machine setup instructions.
@@ -26,7 +26,7 @@ The `.cmd` form avoids PowerShell execution-policy errors.
 Start the FastAPI backend from the repository root:
 
 ```powershell
-.\.venv\Scripts\python.exe -m uvicorn rag_tutorial.api:app --reload
+.\.venv\Scripts\python.exe -m uvicorn grounded.api:app --reload
 ```
 
 In a second terminal, start the frontend:

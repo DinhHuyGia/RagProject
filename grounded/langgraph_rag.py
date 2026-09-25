@@ -6,15 +6,15 @@ from langchain_core.prompts import ChatPromptTemplate
 from langgraph.graph import END, START, StateGraph
 from pydantic import BaseModel, Field
 
-from rag_tutorial.adaptive_rag import (
+from grounded.adaptive_rag import (
     AdaptiveRAG,
     IndexName,
     RequestedStrategy,
     RouteDecision,
     StrategyName,
 )
-from rag_tutorial.section_05_rag_fusion import reciprocal_rank_fusion
-from rag_tutorial.shared import format_docs
+from grounded.section_05_rag_fusion import reciprocal_rank_fusion
+from grounded.shared import format_docs
 
 RETRIEVAL_PLANNER_PROMPT = """
 You are planning document retrieval for a RAG system whose corpus may contain

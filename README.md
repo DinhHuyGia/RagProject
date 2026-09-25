@@ -45,13 +45,13 @@ Uploads are limited to 10 MB per file.
 ## Repository layout
 
 ```text
-RagCodeAlong/
+RagProject/
 ├── frontend/             React and TypeScript application
-├── rag_tutorial/         FastAPI, ingestion, retrieval, and tutorial modules
+├── grounded/         FastAPI, ingestion, retrieval, and example modules
 ├── tests/                Offline API and ingestion tests
 ├── data/                 Local runtime data; excluded from Git
 ├── pyproject.toml        Python package and tool configuration
-└── rag_codealong.py      Tutorial command-line launcher
+└── main.py      example command-line launcher
 ```
 
 ## Prerequisites
@@ -85,13 +85,13 @@ errors on Windows.
 Clone the private repository:
 
 ```powershell
-git clone https://github.com/OWNER/RagCodeAlong.git
-cd RagCodeAlong
+git clone https://github.com/OWNER/RagProject.git
+cd RagProject
 ```
 
 Replace `OWNER` with the repository owner's GitHub username. If the project was
 provided as a ZIP file, extract it and open PowerShell in the extracted
-`RagCodeAlong` directory instead.
+`RagProject` directory instead.
 
 ### 2. Create the Python environment
 
@@ -184,7 +184,7 @@ The committed `pnpm-lock.yaml` keeps dependency versions reproducible.
 In the first PowerShell window, from the repository root:
 
 ```powershell
-.\.venv\Scripts\python.exe -m uvicorn rag_tutorial.api:app --reload
+.\.venv\Scripts\python.exe -m uvicorn grounded.api:app --reload
 ```
 
 Wait until the terminal reports that the application startup is complete.
@@ -200,11 +200,11 @@ Keep this PowerShell window open.
 Open a second PowerShell window:
 
 ```powershell
-cd C:\path\to\RagCodeAlong\frontend
+cd C:\path\to\RagProject\frontend
 pnpm.cmd dev
 ```
 
-Replace `C:\path\to\RagCodeAlong` with the actual project location. Open the
+Replace `C:\path\to\RagProject` with the actual project location. Open the
 local address printed by Vite, normally:
 
 <http://localhost:5173>
@@ -364,5 +364,5 @@ Open the address printed by Vite manually, normally
 
 ## Additional documentation
 
-- [Backend and tutorial details](rag_tutorial/README.md)
+- [Backend and example details](grounded/README.md)
 - [Frontend details](frontend/README.md)

@@ -2,7 +2,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from rag_tutorial.document_registry import DocumentRegistry
+from grounded.document_registry import DocumentRegistry
 
 
 class DocumentRegistryTests(unittest.TestCase):

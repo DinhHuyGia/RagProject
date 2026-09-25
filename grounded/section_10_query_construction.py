@@ -10,7 +10,7 @@ from langchain_core.runnables import RunnableLambda, RunnablePassthrough
 from pydantic import BaseModel, Field
 from pytubefix import YouTube
 
-from rag_tutorial.shared import (
+from grounded.shared import (
     create_base_rag_prompt,
     create_embeddings,
     create_llm,
@@ -21,8 +21,8 @@ from rag_tutorial.shared import (
 DEFAULT_VIDEO_URL = "https://www.youtube.com/watch?v=pbAd8O1Lvm4"
 
 
-class TutorialSearch(BaseModel):
-    """Structured search over tutorial-video transcripts and metadata."""
+class VideoSearch(BaseModel):
+    """Structured search over example-video transcripts and metadata."""
 
     content_search: str = Field(
         ...,
@@ -119,7 +119,7 @@ def load_youtube_documents(video_url: str = DEFAULT_VIDEO_URL):
     return documents
 
 
-def build_chroma_filter(search: TutorialSearch):
+def build_chroma_filter(search: VideoSearch):
     conditions = []
     comparisons = (
         ("view_count", "$gte", search.min_view_count),
@@ -153,13 +153,13 @@ def build_chroma_filter(search: TutorialSearch):
 
 
 def build_query_analyzer(llm):
-    system_message = """Convert the question into a structured tutorial-video
+    system_message = """Convert the question into a structured example-video
 search. Preserve its meaning, do not invent technologies, and only add metadata
 filters explicitly requested by the user."""
     prompt = ChatPromptTemplate.from_messages(
         [("system", system_message), ("human", "{question}")]
     )
-    return prompt | llm.with_structured_output(TutorialSearch)
+    return prompt | llm.with_structured_output(VideoSearch)
 
 
 def build_youtube_rag_chain(video_url: str = DEFAULT_VIDEO_URL):
@@ -170,7 +170,7 @@ def build_youtube_rag_chain(video_url: str = DEFAULT_VIDEO_URL):
     vectorstore = Chroma.from_documents(
         documents=splits,
         embedding=create_embeddings(),
-        collection_name="section_10_youtube_tutorials",
+        collection_name="section_10_youtube_examples",
     )
 
     def retrieve(question: str):

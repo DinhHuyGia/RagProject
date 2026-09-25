@@ -5,7 +5,7 @@ from langchain_core.output_parsers import StrOutputParser
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.runnables import RunnableLambda
 
-from rag_tutorial.shared import (
+from grounded.shared import (
     build_blog_resources,
     create_base_rag_prompt,
     create_llm,

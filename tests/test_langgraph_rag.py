@@ -1,7 +1,7 @@
 import pytest
 from langchain_core.documents import Document
 
-from rag_tutorial.langgraph_rag import (
+from grounded.langgraph_rag import (
     AvailableSource,
     ContextGrade,
     EvidenceGrade,

@@ -7,8 +7,8 @@ from typing import Any
 from langchain_chroma import Chroma
 from langchain_core.documents import Document
 
-from rag_tutorial.ingestion import DocumentIngestionService
-from rag_tutorial.shared import create_embeddings
+from grounded.ingestion import DocumentIngestionService
+from grounded.shared import create_embeddings
 
 EVALUATION_DOCUMENTS = (
     (

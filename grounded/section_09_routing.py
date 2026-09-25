@@ -8,7 +8,7 @@ from langchain_core.prompts import ChatPromptTemplate, PromptTemplate
 from langchain_core.runnables import RunnableLambda, RunnablePassthrough
 from pydantic import BaseModel, Field
 
-from rag_tutorial.shared import create_embeddings, create_llm
+from grounded.shared import create_embeddings, create_llm
 
 
 class RouteQuery(BaseModel):

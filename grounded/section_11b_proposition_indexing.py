@@ -11,7 +11,7 @@ from langchain_core.runnables import RunnablePassthrough
 from langchain_core.stores import InMemoryByteStore
 from pydantic import BaseModel, Field
 
-from rag_tutorial.shared import (
+from grounded.shared import (
     create_base_rag_prompt,
     create_embeddings,
     create_llm,

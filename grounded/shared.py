@@ -18,7 +18,7 @@ from langchain_openai import ChatOpenAI, OpenAIEmbeddings
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 
 # Web loaders use this header when requesting public source pages.
-os.environ.setdefault("USER_AGENT", "RagCodeAlong/1.0")
+os.environ.setdefault("USER_AGENT", "Grounded/1.0")
 
 
 DEFAULT_EMBEDDING_DEPLOYMENT = "text-embedding-3-small"

@@ -1,8 +1,8 @@
-# Backend and RAG tutorial
+# Backend and RAG example
 
 The complete fresh-machine setup is documented in the
 [root README](../README.md). This guide contains backend-specific commands and
-tutorial-module details.
+example-module details.
 
 ## Backend setup
 
@@ -33,7 +33,7 @@ Do not add `/openai/v1/`; the backend adds it automatically.
 Start the document API:
 
 ```powershell
-.\.venv\Scripts\python.exe -m uvicorn rag_tutorial.api:app --reload
+.\.venv\Scripts\python.exe -m uvicorn grounded.api:app --reload
 ```
 
 Start the React frontend in a second terminal:
@@ -73,21 +73,21 @@ offline:
 Uploaded files, Chroma indexes, and the SQLite document registry are runtime
 data under `data/` and are intentionally excluded from version control.
 
-## Tutorial modules
+## example modules
 
 Each section is an independent module. Run one from the repository root:
 
 ```powershell
-.\.venv\Scripts\python.exe -m rag_tutorial.section_01_embedding_similarity
-.\.venv\Scripts\python.exe -m rag_tutorial.section_03_simple_rag
-.\.venv\Scripts\python.exe -m rag_tutorial.section_11_summary_indexing
-.\.venv\Scripts\python.exe -m rag_tutorial.section_11b_proposition_indexing
+.\.venv\Scripts\python.exe -m grounded.section_01_embedding_similarity
+.\.venv\Scripts\python.exe -m grounded.section_03_simple_rag
+.\.venv\Scripts\python.exe -m grounded.section_11_summary_indexing
+.\.venv\Scripts\python.exe -m grounded.section_11b_proposition_indexing
 ```
 
 Shared model, embedding, loading, splitting, and formatting helpers live in
 `shared.py`. Importing a module does not make network or model calls; those
 operations run only from its functions or `main()`.
 
-If no key is set, a runnable tutorial section asks for it without echoing the
+If no key is set, a runnable example section asks for it without echoing the
 value. `AZURE_OPENAI_ENDPOINT` must still be configured. The API should be
 started with both required values already present in its environment.

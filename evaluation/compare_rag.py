@@ -1,7 +1,7 @@
 import argparse
 
-from rag_tutorial.adaptive_rag import AdaptiveRAG, RequestedStrategy
-from rag_tutorial.langgraph_rag import LangGraphRAG
+from grounded.adaptive_rag import AdaptiveRAG, RequestedStrategy
+from grounded.langgraph_rag import LangGraphRAG
 
 if __package__:
     from .evaluate_retrieval import build_retriever

@@ -6,8 +6,8 @@ from langchain_core.output_parsers import StrOutputParser
 from langchain_core.prompts import ChatPromptTemplate
 from pydantic import BaseModel
 
-from rag_tutorial.section_05_rag_fusion import reciprocal_rank_fusion
-from rag_tutorial.shared import create_llm, format_docs
+from grounded.section_05_rag_fusion import reciprocal_rank_fusion
+from grounded.shared import create_llm, format_docs
 
 StrategyName = Literal[
     "simple",

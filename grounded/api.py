@@ -16,15 +16,15 @@ from fastapi import (
 )
 from pydantic import BaseModel, Field
 
-from rag_tutorial.adaptive_rag import (
+from grounded.adaptive_rag import (
     AdaptiveAnswer,
     AdaptiveRAG,
     IndexName,
     RequestedStrategy,
 )
-from rag_tutorial.document_registry import DocumentRecord, DocumentRegistry
-from rag_tutorial.ingestion import DocumentIngestionService
-from rag_tutorial.shared import create_document_vectorstore
+from grounded.document_registry import DocumentRecord, DocumentRegistry
+from grounded.ingestion import DocumentIngestionService
+from grounded.shared import create_document_vectorstore
 
 DEFAULT_UPLOAD_DIRECTORY = Path("data/uploads")
 DEFAULT_DOCUMENT_DATABASE = Path("data/documents.sqlite3")

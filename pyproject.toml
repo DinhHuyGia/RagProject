@@ -3,9 +3,9 @@ requires = ["setuptools>=77"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "rag-codealong"
+name = "grounded"
 version = "0.1.0"
-description = "Adaptive retrieval-augmented generation tutorial and document API"
+description = "Adaptive retrieval-augmented generation and document API"
 readme = "README.md"
 requires-python = ">=3.11,<3.14"
 dependencies = [
@@ -44,13 +44,13 @@ eval = [
 ]
 
 [project.scripts]
-rag-codealong = "rag_codealong:main"
+grounded = "main:main"
 
 [tool.setuptools]
-py-modules = ["rag_codealong"]
+py-modules = ["main"]
 
 [tool.setuptools.packages.find]
-include = ["rag_tutorial*"]
+include = ["grounded*"]
 
 [tool.pytest.ini_options]
 addopts = "-ra -p no:cacheprovider"

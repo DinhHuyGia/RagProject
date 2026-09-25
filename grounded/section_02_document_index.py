@@ -1,6 +1,6 @@
 """Section 2: load, split, embed, and retrieve source documents."""
 
-from rag_tutorial.shared import build_blog_resources
+from grounded.shared import build_blog_resources
 
 
 def main() -> None:
