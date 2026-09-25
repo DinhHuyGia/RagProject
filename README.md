@@ -7,12 +7,6 @@ OpenAI chat and embeddings. A separate LangGraph pipeline explores evidence
 planning, targeted retrieval retries, and refusal when supporting evidence is
 missing; evaluation scripts compare it with the pipeline used by the API.
 
-## Screenshots
-
-<!-- TODO: Add actual screenshots at docs/images/ui-upload.png and docs/images/ui-answer.png. -->
-![Grounded document upload panel and indexed document list](docs/images/ui-upload.png)
-![Grounded answer showing source references and retrieval strategy](docs/images/ui-answer.png)
-
 ## Architecture
 
 ```mermaid
@@ -35,9 +29,13 @@ the query, fuses ranked search results, and generates an answer with source
 metadata. The frontend shows the selected strategy, retrieval queries, and
 sources; it also supports listing and deleting documents.
 
-The API uses `AdaptiveRAG` in [grounded/api.py](grounded/api.py).
-[LangGraphRAG](grounded/langgraph_rag.py) is a separately runnable evaluation
-pipeline and is not currently wired into the HTTP endpoint.
+The API serves answers through `AdaptiveRAG` in [grounded/api.py](grounded/api.py),
+which uses LangChain query transformations and reciprocal rank fusion.
+[LangGraphRAG](grounded/langgraph_rag.py) is a separate pipeline built to test a
+different approach: grading retrieved evidence and retrying targeted queries
+rather than transforming the query up front. It runs standalone and is evaluated
+against the API pipeline rather than serving traffic. The evaluation below
+compares them.
 
 Upload chunking uses **600 tokens with 100-token overlap**, configured in
 [grounded/ingestion.py](grounded/ingestion.py) and explicitly matched in
@@ -99,24 +97,52 @@ Relevancy, and Factual Correctness** (F1, high atomicity and coverage) for
 answerable questions. Intentionally unanswerable records instead receive the
 custom refusal-correctness score; their RAGAS scores are null.
 
-Committed results, rounded to three decimals:
+### Baseline pipeline
 
-| Metric | Simple baseline (16 answerable) | Comparison: LangChain (1 answerable) | Comparison: LangGraph (same question) |
-|---|---:|---:|---:|
-| Context precision | 0.966 | 0.167 | 0.710 |
-| Context recall | 0.958 | 0.500 | 0.500 |
-| Faithfulness | 0.957 | 0.889 | 0.000 |
-| Answer relevancy | 0.671 | 0.884 | 0.000 |
-| Factual correctness | 0.632 | 0.000 | 0.240 |
-| Custom refusal correctness | 0.750 (4 unanswerable) | N/A | N/A |
+The `simple` strategy over 16 answerable questions and 4 intentionally
+unanswerable ones:
 
-Sources: [baseline report](evaluation/report/ragas_results.json) (20 questions,
-`simple`) and [comparison report](evaluation/report/ragas_comparison_results.json)
-(one cross-document question, `auto`). These are different runs and sample sizes,
-not a general benchmark. In the comparison, the graph satisfied one of two tasks,
-retried the other twice, and refused the answer. The reports include answers,
-retrieved contexts, and scores; the comparison also includes execution traces,
-model-call counts, and elapsed time. No separate console log is committed.
+| Metric | Score |
+|---|---:|
+| Context precision | 0.966 |
+| Context recall | 0.958 |
+| Faithfulness | 0.957 |
+| Answer relevancy | 0.671 |
+| Factual correctness | 0.632 |
+| Custom refusal correctness | 0.750 |
+
+Source: [baseline report](evaluation/report/ragas_results.json).
+
+### LangChain vs. LangGraph
+
+A single cross-document question, run through both pipelines with `auto`
+routing. **One question is not a benchmark** — it is a trace of how the two
+pipelines behave on a question requiring evidence from more than one source.
+
+| Metric | LangChain (API) | LangGraph |
+|---|---:|---:|
+| Context precision | 0.167 | 0.710 |
+| Context recall | 0.500 | 0.500 |
+| Faithfulness | 0.889 | 0.000 |
+| Answer relevancy | 0.884 | 0.000 |
+| Factual correctness | 0.000 | 0.240 |
+
+The graph retrieved better context (0.710 vs 0.167 precision) but produced no
+answer: it satisfied one of two planned evidence tasks, retried the second
+twice, and refused. Faithfulness and answer relevancy are 0.000 because RAGAS
+has no generated answer to grade — a refusal and a wrong answer score
+identically under these metrics, which is a limitation of evaluating a pipeline
+that can decline. The LangChain pipeline answered and scored well on
+faithfulness, but 0.000 on factual correctness, so it answered fluently from
+insufficient context.
+
+Neither result settles which design is better. The graph's conservatism is the
+intended behavior of evidence grading; whether refusing beats answering wrongly
+depends on the application. Evaluating that tradeoff properly needs a larger
+dataset with a metric that credits appropriate refusal — the custom refusal
+score in [scoring.py](evaluation/scoring.py) is a first attempt.
+
+Source: [comparison report](evaluation/report/ragas_comparison_results.json).
 
 Run from the repository root after configuring Azure credentials:
 
@@ -131,10 +157,6 @@ Evaluation calls Azure services and overwrites its corresponding report. For a
 small run, set `RAGAS_EVALUATION_LIMIT` for the baseline or pass `--limit 1` /
 `--question-id ecosystem-cloud-cross-document` to the comparison runner.
 `RAGAS_EVALUATOR_MODEL` overrides the judge deployment.
-
-**TODO:** Record the evaluation date, code revision, dataset revision, and actual
-chat/embedding/judge deployments when rerunning; the saved reports do not record
-that provenance. Configured defaults cannot establish which models produced them.
 
 ## Tech stack
 
@@ -283,4 +305,4 @@ do not expose development servers directly to the public internet.
 </details>
 
 More detail: [backend examples](grounded/README.md),
-[frontend](frontend/README.md), and [code/security audit](docs/engineering-audit.md).
+[frontend](frontend/README.md)
