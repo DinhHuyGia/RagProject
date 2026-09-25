@@ -10,12 +10,17 @@ from pathlib import Path
 from typing import Any
 
 import bs4
+from dotenv import load_dotenv
 from langchain_chroma import Chroma
 from langchain_community.document_loaders import WebBaseLoader
 from langchain_core.documents import Document
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_openai import ChatOpenAI, OpenAIEmbeddings
 from langchain_text_splitters import RecursiveCharacterTextSplitter
+
+# Load the project-root configuration regardless of the working directory.
+# Explicit process/user environment variables take precedence.
+load_dotenv(Path(__file__).resolve().parents[1] / ".env", override=False)
 
 # Web loaders use this header when requesting public source pages.
 os.environ.setdefault("USER_AGENT", "Grounded/1.0")

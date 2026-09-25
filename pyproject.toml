@@ -23,6 +23,7 @@ dependencies = [
     "numpy>=1.26,<3",
     "pydantic>=2.10,<3",
     "pypdf>=5,<7",
+    "python-dotenv>=1,<2",
     "python-multipart>=0.0.20,<1",
     "pytubefix>=9,<11",
     "tiktoken>=0.9,<1",
