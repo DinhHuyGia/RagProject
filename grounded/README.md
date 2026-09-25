@@ -1,4 +1,4 @@
-# Backend and RAG example
+# Backend and RAG examples
 
 The complete fresh-machine setup is documented in the
 [root README](../README.md). This guide contains backend-specific commands and
@@ -14,6 +14,9 @@ py -3.12 -m venv .venv
 .\.venv\Scripts\python.exe -m pip install --upgrade pip
 .\.venv\Scripts\python.exe -m pip install -e ".[dev]"
 ```
+
+Copy the root `.env.example` to `.env`, or set shell/user environment variables.
+Existing environment values take precedence over `.env`.
 
 Set `AZURE_OPENAI_API_KEY` (or `AZURE_OPENAI_KEY`) and
 `AZURE_OPENAI_ENDPOINT` in the environment. Optional overrides are
@@ -64,7 +67,7 @@ and model responses, so they run without an Azure API key or network access.
 The ingestion integration tests use the production TXT/PDF loaders, text
 splitter, and an ephemeral Chroma collection. They use deterministic local
 embeddings and generate their PDF fixture at runtime, so they also remain
-offline:
+offline after the tokenizer vocabulary has been downloaded on first use:
 
 ```powershell
 .\.venv\Scripts\python.exe -m pytest tests/test_ingestion_integration.py -v
@@ -73,7 +76,7 @@ offline:
 Uploaded files, Chroma indexes, and the SQLite document registry are runtime
 data under `data/` and are intentionally excluded from version control.
 
-## example modules
+## Standalone retrieval examples
 
 Each section is an independent module. Run one from the repository root:
 

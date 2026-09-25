@@ -1,4 +1,4 @@
-"""Command-line launcher for the independently runnable RAG example sections."""
+"""Command-line launcher for standalone retrieval examples."""
 
 import argparse
 import runpy
@@ -21,7 +21,7 @@ SECTIONS = {
 
 def main() -> None:
     parser = argparse.ArgumentParser(
-        description="Run one isolated section of the RAG retrieval example."
+        description="Run a standalone Grounded retrieval example."
     )
     parser.add_argument(
         "section",

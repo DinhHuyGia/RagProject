@@ -1,18 +1,19 @@
-# Grounded: Adaptive RAG workspace
+# Grounded — adaptive document question answering
 
-Grounded is a local document question-answering application. Users upload
-documents, ask questions in natural language, and receive answers grounded in
-the uploaded material with source references.
+Grounded lets users upload documents and ask questions with source references.
+It combines a React/TypeScript interface, a FastAPI API, LangChain query
+transformations, Chroma vector search, SQLite document metadata, and Azure
+OpenAI chat and embeddings. A separate LangGraph pipeline explores evidence
+planning, targeted retrieval retries, and refusal when supporting evidence is
+missing; evaluation scripts compare it with the pipeline used by the API.
 
-The project combines:
+## Screenshots
 
-- A Python and FastAPI document API
-- Chroma vector search
-- LangChain retrieval strategies
-- Azure OpenAI chat and embedding deployments
-- A React and TypeScript frontend
+<!-- TODO: Add actual screenshots at docs/images/ui-upload.png and docs/images/ui-answer.png. -->
+![Grounded document upload panel and indexed document list](docs/images/ui-upload.png)
+![Grounded answer showing source references and retrieval strategy](docs/images/ui-answer.png)
 
-## How it works
+## Architecture
 
 ```mermaid
 flowchart LR
@@ -27,241 +28,123 @@ flowchart LR
     R --> F
 ```
 
-During local development, the frontend runs at `http://localhost:5173` and
-forwards `/api` requests to FastAPI at `http://127.0.0.1:8000`.
+Uploads (PDF, DOCX, TXT, or Markdown, up to 10 MB) are parsed and split into
+chunks; embeddings are persisted in Chroma and document metadata in SQLite.
+For each question, the API selects or accepts a retrieval strategy, transforms
+the query, fuses ranked search results, and generates an answer with source
+metadata. The frontend shows the selected strategy, retrieval queries, and
+sources; it also supports listing and deleting documents.
 
-## Features
+The API uses `AdaptiveRAG` in [grounded/api.py](grounded/api.py).
+[LangGraphRAG](grounded/langgraph_rag.py) is a separately runnable evaluation
+pipeline and is not currently wired into the HTTP endpoint.
 
-- Upload PDF, DOCX, TXT, and Markdown documents
-- Store document metadata in SQLite
-- Persist embeddings in Chroma
-- List and delete indexed documents
-- Ask questions using automatic or manually selected retrieval strategies
-- Display the selected strategy, generated retrieval queries, and sources
-- Run the API and ingestion tests without Azure credentials
+Upload chunking uses **600 tokens with 100-token overlap**, configured in
+[grounded/ingestion.py](grounded/ingestion.py) and explicitly matched in
+[evaluation/evaluate_retrieval.py](evaluation/evaluate_retrieval.py). The shared
+splitter uses tiktoken. Standalone web examples default to 300/50; parent chunks
+for summary/proposition examples use 2000/200 in
+[grounded/shared.py](grounded/shared.py).
 
-Uploads are limited to 10 MB per file.
+## Adaptive retrieval
 
-## Repository layout
+[AdaptiveRAG](grounded/adaptive_rag.py) builds these strategies with **LangChain**.
+`auto` uses a structured LLM routing decision; callers can also choose a strategy.
+The original question remains among the retrieval queries, and reciprocal rank
+fusion combines results into at most eight chunks for answer generation.
 
-```text
-RagProject/
-├── frontend/             React and TypeScript application
-├── grounded/         FastAPI, ingestion, retrieval, and example modules
-├── tests/                Offline API and ingestion tests
-├── data/                 Local runtime data; excluded from Git
-├── pyproject.toml        Python package and tool configuration
-└── main.py      example command-line launcher
+| Strategy | Retrieval behavior |
+|---|---|
+| `simple` | Search directly with the original question. |
+| `multi_query` | Ask the model for four alternative search phrasings. |
+| `decomposition` | Ask for three searchable subquestions in the API pipeline. |
+| `step_back` | Add a broader background question. |
+| `hyde` | Generate a hypothetical answer passage to use only as a search query. |
+
+The self-correcting workflow uses **LangGraph**. Its initial nodes are
+`plan_retrieval → route_question → build_queries → retrieve → grade_evidence_task`.
+The planner creates source-aware evidence tasks, validates document IDs, and
+applies document metadata filters when a source is selected. In `auto`, a
+multi-task or multi-source plan selects decomposition; those planned tasks
+replace the separate decomposition transformer.
+
+Conditional edges implement two checks:
+
+- `grade_evidence_task`: if every task is supported, proceed to `grade_context`.
+  Otherwise, `rewrite_task_queries` uses the grader's explanation to retry only
+  insufficient tasks while preserving satisfied evidence and source filters.
+  Each task permits an initial attempt and two retries. Exhausted tasks go
+  through `fail_evidence_tasks → refuse_answer`.
+- `grade_context`: sufficient combined evidence goes to `generate_answer`.
+  Insufficient evidence goes through `rewrite_query → retrieve` while the global
+  retry counter is below two, then to `refuse_answer`. Both answer and refusal
+  terminate the graph. Task attempts and the global retry counter are separate.
+
+The graph records task status, retry events, and model-call counts. Grading is
+model-based and can reject an answerable question, as the saved comparison below
+shows. The API's LangChain pipeline does not perform this grading/retry loop.
+
+## Evaluation
+
+The [evaluation directory](evaluation/) contains two PDF fixtures, the active
+`apple_website_analysis_questions.jsonl` dataset, an empty `dataset.jsonl`
+placeholder, retrieval scoring, RAGAS runners, and two committed JSON reports.
+`evaluate_retrieval.py` measures evidence Precision@8, Recall@8, and source recall.
+`compare_rag.py` prints a side-by-side pipeline run. `scoring.py` implements a
+separate heuristic refusal score; `ragas_compat.py` handles an optional Vertex AI
+import for RAGAS without adding that provider's dependencies.
+
+RAGAS computes **Context Precision, Context Recall, Faithfulness, Answer
+Relevancy, and Factual Correctness** (F1, high atomicity and coverage) for
+answerable questions. Intentionally unanswerable records instead receive the
+custom refusal-correctness score; their RAGAS scores are null.
+
+Committed results, rounded to three decimals:
+
+| Metric | Simple baseline (16 answerable) | Comparison: LangChain (1 answerable) | Comparison: LangGraph (same question) |
+|---|---:|---:|---:|
+| Context precision | 0.966 | 0.167 | 0.710 |
+| Context recall | 0.958 | 0.500 | 0.500 |
+| Faithfulness | 0.957 | 0.889 | 0.000 |
+| Answer relevancy | 0.671 | 0.884 | 0.000 |
+| Factual correctness | 0.632 | 0.000 | 0.240 |
+| Custom refusal correctness | 0.750 (4 unanswerable) | N/A | N/A |
+
+Sources: [baseline report](evaluation/report/ragas_results.json) (20 questions,
+`simple`) and [comparison report](evaluation/report/ragas_comparison_results.json)
+(one cross-document question, `auto`). These are different runs and sample sizes,
+not a general benchmark. In the comparison, the graph satisfied one of two tasks,
+retried the other twice, and refused the answer. The reports include answers,
+retrieved contexts, and scores; the comparison also includes execution traces,
+model-call counts, and elapsed time. No separate console log is committed.
+
+Run from the repository root after configuring Azure credentials:
+
+```bash
+python -m pip install -e ".[dev,eval]"
+python -m evaluation.evaluate_retrieval
+python -m evaluation.evaluate_ragas
+python -m evaluation.evaluate_ragas_comparison --strategy auto
 ```
 
-## Prerequisites
+Evaluation calls Azure services and overwrites its corresponding report. For a
+small run, set `RAGAS_EVALUATION_LIMIT` for the baseline or pass `--limit 1` /
+`--question-id ecosystem-cloud-cross-document` to the comparison runner.
+`RAGAS_EVALUATOR_MODEL` overrides the judge deployment.
 
-Install the following before setup:
+**TODO:** Record the evaluation date, code revision, dataset revision, and actual
+chat/embedding/judge deployments when rerunning; the saved reports do not record
+that provenance. Configured defaults cannot establish which models produced them.
 
-- Git
-- Python 3.11, 3.12, or 3.13; Python 3.12 is recommended
-- Node.js 24 LTS
-- An Azure OpenAI resource with:
-  - A chat model deployment
-  - A `text-embedding-3-small` deployment, or another compatible embedding
-    deployment
+## Tech stack
 
-Confirm that the tools are available:
+- Python 3.11–3.13, FastAPI, Pydantic, Uvicorn
+- LangChain, LangGraph, Azure OpenAI
+- Chroma, SQLite, tiktoken, PDF/DOCX/text loaders
+- React, TypeScript, Vite, pnpm
+- pytest, Ruff, RAGAS
 
-```powershell
-git --version
-py -3.12 --version
-node --version
-npm.cmd --version
-```
-
-Using the `.cmd` form of Node commands avoids PowerShell execution-policy
-errors on Windows.
-
-## Complete Windows setup
-
-### 1. Get the project
-
-Clone the private repository:
-
-```powershell
-git clone https://github.com/OWNER/RagProject.git
-cd RagProject
-```
-
-Replace `OWNER` with the repository owner's GitHub username. If the project was
-provided as a ZIP file, extract it and open PowerShell in the extracted
-`RagProject` directory instead.
-
-### 2. Create the Python environment
-
-From the repository root:
-
-```powershell
-py -3.12 -m venv .venv
-.\.venv\Scripts\python.exe -m pip install --upgrade pip
-.\.venv\Scripts\python.exe -m pip install -e ".[dev]"
-```
-
-These commands use the virtual environment directly, so activating
-`Activate.ps1` is not required.
-
-### 3. Run the offline checks
-
-Verify the project before adding Azure credentials:
-
-```powershell
-.\.venv\Scripts\python.exe -m pytest
-.\.venv\Scripts\python.exe -m ruff check .
-```
-
-The tests use local test doubles and deterministic embeddings. They do not call
-Azure OpenAI and do not require an API key.
-
-Third-party deprecation warnings may appear during the test run. A successful
-run ends with all collected tests reported as passed.
-
-### 4. Configure Azure OpenAI
-
-The backend requires these Windows user environment variables:
-
-| Variable | Required | Example or default |
-|---|---:|---|
-| `AZURE_OPENAI_API_KEY` | Yes | Your Azure OpenAI key |
-| `AZURE_OPENAI_ENDPOINT` | Yes | `https://resource-name.openai.azure.com/` |
-| `AZURE_OPENAI_CHAT_DEPLOYMENT` | No | Defaults to `gpt-5-mini` |
-| `AZURE_OPENAI_EMBEDDING_DEPLOYMENT` | No | Defaults to `text-embedding-3-small` |
-
-The deployment variables must contain Azure **deployment names**. A deployment
-name may differ from the underlying model name.
-
-To create persistent variables on Windows:
-
-1. Open the Start menu.
-2. Search for **Edit environment variables for your account**.
-3. Under **User variables**, select **New**.
-4. Add `AZURE_OPENAI_API_KEY` with your authorized key.
-5. Add `AZURE_OPENAI_ENDPOINT` with your Azure resource endpoint.
-6. Add the two deployment variables if your Azure deployment names differ from
-   the defaults above.
-7. Close and reopen PowerShell and any editor or development application.
-
-Enter the endpoint without `/openai/v1/`; the backend adds that path
-automatically.
-
-Confirm the required variables without printing the API key:
-
-```powershell
-if ($env:AZURE_OPENAI_API_KEY) {
-    "Azure API key is available"
-} else {
-    "Azure API key is missing"
-}
-
-$env:AZURE_OPENAI_ENDPOINT
-```
-
-Never place the API key in Python code, frontend code, Git, GitHub, or
-`frontend/.env`. Each reviewer should use credentials they are authorized to
-use.
-
-### 5. Install the frontend packages
-
-Install pnpm 11 and the frontend dependencies:
-
-```powershell
-npm.cmd install --global pnpm@latest-11
-pnpm.cmd --version
-cd frontend
-pnpm.cmd install
-cd ..
-```
-
-The committed `pnpm-lock.yaml` keeps dependency versions reproducible.
-
-### 6. Start FastAPI
-
-In the first PowerShell window, from the repository root:
-
-```powershell
-.\.venv\Scripts\python.exe -m uvicorn grounded.api:app --reload
-```
-
-Wait until the terminal reports that the application startup is complete.
-Useful backend addresses:
-
-- API documentation: <http://127.0.0.1:8000/docs>
-- Health check: <http://127.0.0.1:8000/health>
-
-Keep this PowerShell window open.
-
-### 7. Start the frontend
-
-Open a second PowerShell window:
-
-```powershell
-cd C:\path\to\RagProject\frontend
-pnpm.cmd dev
-```
-
-Replace `C:\path\to\RagProject` with the actual project location. Open the
-local address printed by Vite, normally:
-
-<http://localhost:5173>
-
-Keep both PowerShell windows open while using the application. Press
-`Ctrl+C` in each window to stop the servers.
-
-## First-use walkthrough
-
-1. Open the frontend.
-2. Select **Add a document** and upload a PDF, DOCX, TXT, or Markdown file.
-3. Wait until the document appears in the knowledge base.
-4. Enter a question that can be answered by the document.
-5. Leave retrieval set to **Auto** for the first test.
-6. Select **Ask Grounded**.
-7. Review the answer, strategy, sources, and retrieval details.
-8. Use **Remove** to test document deletion if desired.
-
-The API returns a conflict response if a question is submitted before at least
-one document has been uploaded.
-
-## Development commands
-
-Run backend tests:
-
-```powershell
-.\.venv\Scripts\python.exe -m pytest
-```
-
-Run Python lint checks:
-
-```powershell
-.\.venv\Scripts\python.exe -m ruff check .
-```
-
-Build the frontend:
-
-```powershell
-cd frontend
-pnpm.cmd build
-```
-
-Check TypeScript without creating a production build:
-
-```powershell
-cd frontend
-pnpm.cmd typecheck
-```
-
-Preview the frontend production build:
-
-```powershell
-cd frontend
-pnpm.cmd preview
-```
-
-## API summary
+## API reference
 
 | Method | Path | Purpose |
 |---|---|---|
@@ -271,98 +154,133 @@ pnpm.cmd preview
 | `DELETE` | `/documents/{document_id}` | Delete a document and its chunks |
 | `POST` | `/rag/ask` | Ask a grounded question |
 
-Interactive request and response documentation is available at
-<http://127.0.0.1:8000/docs> while FastAPI is running.
+Interactive schemas: [FastAPI docs](http://127.0.0.1:8000/docs).
+Upload a document before asking a question; an empty workspace returns HTTP 409.
 
-## Local data and security
+## Setup
 
-Runtime data is stored under `data/`:
+Install Git, Python 3.11–3.13, Node.js (the existing setup targets Node 24), and
+pnpm 11. Provide an Azure OpenAI resource with chat and embedding deployments.
+This is a public repository:
 
-```text
-data/
-├── uploads/              Uploaded source files
-├── chroma/               Persisted vector index
-└── documents.sqlite3     Document registry
+```bash
+git clone https://github.com/DinhHuyGia/RagProject.git
+cd RagProject
 ```
 
-The runtime data, Python environment, frontend dependencies, builds, and local
-environment files are excluded through `.gitignore`.
+### macOS / Linux
 
-This project currently provides a shared local workspace and does not include
-authentication. Do not expose the development servers directly to the public
-internet.
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install -e ".[dev]"
+cp .env.example .env
+# Edit .env with your Azure credentials and deployment names.
+python -m uvicorn grounded.api:app --reload
+```
 
-## Troubleshooting
+In a second terminal, from the repository root:
 
-### `npm.ps1` or `pnpm.ps1` cannot be loaded
+```bash
+npm install --global pnpm@latest-11
+cd frontend
+pnpm install --frozen-lockfile
+pnpm dev
+```
 
-PowerShell script execution is restricted. Use the command wrappers:
+### Windows / PowerShell
 
 ```powershell
-npm.cmd --version
-pnpm.cmd --version
+py -3.12 -m venv .venv
+.\.venv\Scripts\python.exe -m pip install -e ".[dev]"
+Copy-Item .env.example .env
+# Edit .env with your Azure credentials and deployment names.
+.\.venv\Scripts\python.exe -m uvicorn grounded.api:app --reload
 ```
 
-The setup commands in this README already use those wrappers.
-
-### `pnpm` is not recognized
-
-Install it and reopen PowerShell:
+In a second PowerShell window, from the repository root:
 
 ```powershell
 npm.cmd install --global pnpm@latest-11
-pnpm.cmd --version
+cd frontend
+pnpm.cmd install --frozen-lockfile
+pnpm.cmd dev
 ```
 
-### Python activation is blocked
+Using the explicit interpreter avoids activation-policy issues. For other Python
+commands in this README, substitute `.\.venv\Scripts\python.exe` for `python`.
 
-Activation is optional. Run the virtual environment's interpreter directly:
+### Configuration and checks
 
-```powershell
-.\.venv\Scripts\python.exe --version
+The backend loads the repository-root `.env` through `python-dotenv`; existing
+process/user environment variables take precedence. Alternatively, export the
+variables in your shell or set Windows User variables and reopen the terminal.
+Every application environment setting is documented in [.env.example](.env.example).
+The required values are `AZURE_OPENAI_API_KEY` (or the `AZURE_OPENAI_KEY` alias)
+and `AZURE_OPENAI_ENDPOINT`. Use the resource endpoint without `/openai/v1/`;
+the backend appends it. Deployment settings must be Azure deployment names.
+If using the legacy key alias, remove the primary key placeholder from `.env`.
+
+Open [Grounded](http://localhost:5173), upload a document, and select **Ask Grounded**.
+Vite proxies `/api` to `http://127.0.0.1:8000`; for a separately hosted API, set
+`VITE_API_BASE_URL` in `frontend/.env` and configure allowed backend origins.
+Never put backend credentials in frontend environment variables. `.env` files
+are ignored by Git.
+
+```bash
+python -m pytest
+python -m ruff check .
+cd frontend
+pnpm typecheck
+pnpm build
 ```
 
-### `AZURE_OPENAI_ENDPOINT environment variable is required`
-
-Add `AZURE_OPENAI_ENDPOINT` as a Windows user variable, close PowerShell, and
-open a new PowerShell window. The value should resemble:
+Tests use model doubles and deterministic embeddings without Azure credentials.
+The first tokenizer use may download tiktoken vocabulary data; cached runs can
+operate offline. Standalone retrieval examples remain available through
+`python main.py --help` or the installed `grounded` command.
 
 ```text
-https://resource-name.openai.azure.com/
+RagProject/
+├── grounded/       API, ingestion, retrieval pipelines, and standalone examples
+├── frontend/       React application
+├── evaluation/     Fixtures, questions, runners, and saved results
+├── tests/          API, ingestion, graph, and scoring tests
+├── docs/images/    UI screenshot location
+├── data/           Ignored uploads, Chroma index, and SQLite registry
+├── .env.example    Configuration template
+├── main.py         Standalone example launcher
+└── pyproject.toml  Package, dependencies, and tools
 ```
 
-### Azure returns `401 Unauthorized`
+Runtime files live in `data/uploads/`, `data/chroma/`, and
+`data/documents.sqlite3`. This is a shared local workspace without authentication;
+do not expose development servers directly to the public internet.
 
-Confirm that the API key belongs to the configured Azure OpenAI resource and
-that it was copied without extra spaces. Do not print or share the key while
-troubleshooting.
+## Troubleshooting
 
-### Azure returns a deployment or `404` error
+<details>
+<summary>Environment, Azure, and local server troubleshooting</summary>
 
-Confirm that the chat and embedding environment variables match the deployment
-names shown in the Azure portal. Also confirm that the endpoint belongs to the
-same Azure resource.
+- **PowerShell blocks npm/pnpm scripts:** use `npm.cmd` and `pnpm.cmd`.
+- **pnpm is missing:** install pnpm 11 and reopen the terminal.
+- **Python activation is blocked:** use `.\.venv\Scripts\python.exe` directly.
+- **Missing Azure endpoint:** edit the root `.env`, or set the environment
+  variable and restart the backend. Existing environment values override `.env`.
+- **Azure 401:** check that the key belongs to the configured resource and has
+  no extra spaces. Do not print the key when diagnosing.
+- **Azure deployment/404 error:** check deployment names and the resource
+  endpoint; omit `/openai/v1/` from the configured endpoint.
+- **Frontend cannot reach the API:** confirm backend startup and open
+  [health](http://127.0.0.1:8000/health). Start Vite from `frontend/`.
+- **Port 8000 is occupied:** stop the conflicting server or update both the
+  backend port and the target in `frontend/vite.config.ts`.
+- **Browser did not open:** open the URL Vite prints, normally
+  [localhost:5173](http://localhost:5173).
+- **Tokenizer download fails:** allow the initial vocabulary download before
+  running ingestion tests offline.
 
-### The frontend says it cannot reach the document API
+</details>
 
-Confirm that:
-
-1. FastAPI is still running at `http://127.0.0.1:8000`.
-2. The FastAPI terminal shows a successful startup.
-3. The frontend was started from the `frontend` directory.
-4. The health check opens successfully.
-
-### Port 8000 is already in use
-
-Stop the other program using port 8000 before starting FastAPI. The frontend's
-development proxy expects the backend at port 8000.
-
-### The browser does not open automatically
-
-Open the address printed by Vite manually, normally
-<http://localhost:5173>.
-
-## Additional documentation
-
-- [Backend and example details](grounded/README.md)
-- [Frontend details](frontend/README.md)
+More detail: [backend examples](grounded/README.md),
+[frontend](frontend/README.md), and [code/security audit](docs/engineering-audit.md).

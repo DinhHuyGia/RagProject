@@ -1,2 +1,2 @@
-"""Independent, runnable examples for the RAG retrieval example."""
+"""Grounded document API, retrieval pipelines, and standalone examples."""
 
